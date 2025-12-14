@@ -5,17 +5,29 @@ import { createDesk } from './geometries/createDesk.js';
 import { createCagedButton } from './geometries/createCagedButton.js';
 import { createWindow } from './geometries/createWindow.js';
 import { createRoom } from './geometries/createRoom.js';
+import { createMonitor } from './geometries/createMonitor.js';
+import { createPC } from './geometries/createPC.js';
+import { createKeyboard } from './geometries/createKeyboard.js';
+import { createMouse } from './geometries/createMouse.js';
+import { createDoor } from './geometries/createDoor.js';
+import { createSafe } from './geometries/createSafe.js';
 
 class Game {
   constructor() {
+    this.state = 'MENU';
     this.renderer = null;
     this.camera = null;
     this.scene = null;
     this.controls = null;
 
     this.menuElement = document.getElementById('menu');
+    this.startMenuElement = document.getElementById('start-menu');
+    this.pauseMenuElement = document.getElementById('pause-menu');
     this.startButton = document.getElementById('start-button');
     this.skipIntroCheckbox = document.getElementById('skip-intro-checkbox');
+    this.pauseButton = document.getElementById('pause-button');
+    this.continueButton = document.getElementById('continue-button');
+    this.restartButton = document.getElementById('restart-button');
 
     this.init();
     this.animate = this.animate.bind(this);
@@ -39,6 +51,7 @@ class Game {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 1, 0);
     this.controls.enableDamping = true;
+    this.controls.enabled = false;
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -50,35 +63,64 @@ class Game {
 
     // Event Listeners
     this.startButton.addEventListener('click', () => this.start());
+    this.pauseButton.addEventListener('click', () => this.pause());
+    this.continueButton.addEventListener('click', () => this.resume());
+    this.restartButton.addEventListener('click', () => this.restart());
     window.addEventListener('resize', () => this.onWindowResize());
 
     // Create Scene
-    const room = createRoom();
-    this.scene.add(room);
-
-    const desk = createDesk();
-    this.scene.add(desk);
-
-    const cagedButton = createCagedButton();
-    this.scene.add(cagedButton);
-
-    const gameWindow = createWindow();
-    this.scene.add(gameWindow);
+    this.scene.add(createRoom());
+    this.scene.add(createDesk());
+    this.scene.add(createCagedButton());
+    this.scene.add(createWindow());
+    this.scene.add(createMonitor());
+    this.scene.add(createPC());
+    this.scene.add(createKeyboard());
+    this.scene.add(createMouse());
+    this.scene.add(createDoor());
+    this.scene.add(createSafe());
 
     this.animate();
   }
 
   start() {
+    this.state = 'PLAYING';
     this.menuElement.classList.add('hidden');
-    const skipIntro = this.skipIntroCheckbox.checked;
+    this.pauseButton.classList.remove('hidden');
+    this.controls.enabled = true;
 
+    // Auto-rotate briefly to show interactivity
+    this.controls.autoRotate = true;
+    setTimeout(() => {
+      this.controls.autoRotate = false;
+    }, 2000);
+
+    const skipIntro = this.skipIntroCheckbox.checked;
     if (skipIntro) {
-      // Start timer immediately
       console.log('Starting game without introduction.');
     } else {
-      // Start introduction
       console.log('Starting game with introduction.');
     }
+  }
+
+  pause() {
+    this.state = 'PAUSED';
+    this.menuElement.classList.remove('hidden');
+    this.startMenuElement.classList.add('hidden');
+    this.pauseMenuElement.classList.remove('hidden');
+    this.pauseButton.classList.add('hidden');
+    this.controls.enabled = false;
+  }
+
+  resume() {
+    this.state = 'PLAYING';
+    this.menuElement.classList.add('hidden');
+    this.pauseButton.classList.remove('hidden');
+    this.controls.enabled = true;
+  }
+
+  restart() {
+    window.location.reload();
   }
 
   onWindowResize() {
@@ -89,7 +131,12 @@ class Game {
 
   animate() {
     requestAnimationFrame(this.animate);
-    this.controls.update();
+    
+    console.log(`Game State: ${this.state}, Controls Enabled: ${this.controls.enabled}`);
+
+    if (this.state === 'PLAYING' || this.controls.autoRotate) {
+      this.controls.update();
+    }
     this.renderer.render(this.scene, this.camera);
   }
 }

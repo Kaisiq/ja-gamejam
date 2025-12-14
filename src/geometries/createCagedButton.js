@@ -3,33 +3,44 @@ import * as THREE from 'three';
 export function createCagedButton() {
   const cagedButton = new THREE.Group();
 
-  const baseGeometry = new THREE.CylinderGeometry(0.2, 0.2, 0.05, 32);
-  const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
-  const base = new THREE.Mesh(baseGeometry, baseMaterial);
-  base.position.y = 1.05;
-  cagedButton.add(base);
+  // The big red button
+  const buttonGroup = new THREE.Group();
+  const buttonBaseGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.08, 32);
+  const buttonBaseMat = new THREE.MeshStandardMaterial({ color: 0x555555 });
+  const buttonBase = new THREE.Mesh(buttonBaseGeo, buttonBaseMat);
+  buttonGroup.add(buttonBase);
 
-  const buttonGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.1, 32);
-  const buttonMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-  const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
-  button.position.y = 1.1;
-  cagedButton.add(button);
+  const buttonTopGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.05, 32);
+  const buttonTopMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0x550000 });
+  const buttonTop = new THREE.Mesh(buttonTopGeo, buttonTopMat);
+  buttonTop.position.y = 0.06;
+  buttonGroup.add(buttonTop);
+  
+  buttonGroup.position.y = 1.05;
+  cagedButton.add(buttonGroup);
 
+  // The cage
   const cage = new THREE.Group();
-  const barGeometry = new THREE.BoxGeometry(0.02, 0.5, 0.02);
-  const barMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+  const barMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.8, roughness: 0.2 });
+  const ringGeo = new THREE.TorusGeometry(0.25, 0.01, 16, 100);
+  
+  const topRing = new THREE.Mesh(ringGeo, barMaterial);
+  topRing.position.y = 1.4;
+  topRing.rotation.x = Math.PI / 2;
+  cage.add(topRing);
 
-  for (let i = 0; i < 8; i++) {
-    const angle = (i / 8) * Math.PI * 2;
-    const bar = new THREE.Mesh(barGeometry, barMaterial);
-    bar.position.set(Math.cos(angle) * 0.25, 1.3, Math.sin(angle) * 0.25);
+  const bottomRing = new THREE.Mesh(ringGeo, barMaterial);
+  bottomRing.position.y = 1.1;
+  bottomRing.rotation.x = Math.PI / 2;
+  cage.add(bottomRing);
+
+  const barGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.3, 16);
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    const bar = new THREE.Mesh(barGeo, barMaterial);
+    bar.position.set(Math.cos(angle) * 0.25, 1.25, Math.sin(angle) * 0.25);
     cage.add(bar);
   }
-
-  const topGeometry = new THREE.BoxGeometry(0.6, 0.02, 0.6);
-  const top = new THREE.Mesh(topGeometry, barMaterial);
-  top.position.y = 1.55;
-  cage.add(top);
 
   cagedButton.add(cage);
 
