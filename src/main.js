@@ -20,6 +20,7 @@ class Game {
     this.scene = null;
     this.controls = null;
     this.modelLoader = new ModelLoader();
+    this.officeChair = null;
 
     this.menuElement = document.getElementById("menu");
     this.startMenuElement = document.getElementById("start-menu");
@@ -51,6 +52,7 @@ class Game {
       0.1,
       1000,
     );
+    // Position the camera as if sitting in the chair
     this.camera.position.set(0, 1.6, 1.5);
 
     // Controls
@@ -58,6 +60,11 @@ class Game {
     this.controls.target.set(0, 1, 0);
     this.controls.enableDamping = true;
     this.controls.enabled = false;
+    // First-person-like controls
+    this.controls.enablePan = false;
+    this.controls.enableZoom = false;
+    this.controls.minPolarAngle = Math.PI / 3; // Prevent looking too far up
+    this.controls.maxPolarAngle = (2 * Math.PI) / 3; // Prevent looking too far down
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -86,9 +93,9 @@ class Game {
     this.scene.add(createSafe());
 
     this.modelLoader
-      .load("models/monitor/scene.gltf")
+      .load("models/acer_monitor.glb")
       .then((model) => {
-        model.scale.set(0.2, 0.2, 0.2);
+        model.scale.set(1, 1, 1);
         model.position.set(-0.4, 1.05, -0.3);
         this.scene.add(model);
       })
@@ -99,9 +106,15 @@ class Game {
     this.modelLoader
       .load("models/office_chair.glb")
       .then((model) => {
-        model.scale.set(1.5, 1.5, 1.5);
-        model.position.set(0, 0, 0);
-        this.scene.add(model);
+        this.officeChair = model;
+        this.officeChair.scale.set(0.8, 0.8, 0.8);
+        // Position chair under the camera
+        this.officeChair.position.set(
+          this.camera.position.x,
+          1,
+          this.camera.position.z,
+        );
+        this.scene.add(this.officeChair);
       })
       .catch((error) => {
         console.error("Error loading office_chair model:", error);
@@ -153,12 +166,18 @@ class Game {
   animate() {
     requestAnimationFrame(this.animate);
 
-    console.log(
-      `Game State: ${this.state}, Controls Enabled: ${this.controls.enabled}`,
-    );
-
-    if (this.state === "PLAYING" || this.controls.autoRotate) {
+    if (this.state === "PLAYING") {
       this.controls.update();
+
+      if (this.officeChair) {
+        // Calculate the camera's horizontal angle
+        const cameraAngle = Math.atan2(
+          this.camera.position.x - this.controls.target.x,
+          this.camera.position.z - this.controls.target.z,
+        );
+        // Apply the angle to the chair's rotation
+        this.officeChair.rotation.y = cameraAngle;
+      }
     }
     this.renderer.render(this.scene, this.camera);
   }
