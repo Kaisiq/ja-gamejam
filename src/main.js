@@ -5,7 +5,7 @@ import { createDesk } from "./geometries/createDesk.js";
 import { createCagedButton } from "./geometries/createCagedButton.js";
 import { createWindow } from "./geometries/createWindow.js";
 import { createRoom } from "./geometries/createRoom.js";
-import { createMonitor } from "./geometries/createMonitor.js";
+import { ModelLoader } from "./ModelLoader.js";
 import { createPC } from "./geometries/createPC.js";
 import { createKeyboard } from "./geometries/createKeyboard.js";
 import { createMouse } from "./geometries/createMouse.js";
@@ -19,6 +19,7 @@ class Game {
     this.camera = null;
     this.scene = null;
     this.controls = null;
+    this.modelLoader = new ModelLoader();
 
     this.menuElement = document.getElementById("menu");
     this.startMenuElement = document.getElementById("start-menu");
@@ -59,7 +60,7 @@ class Game {
     this.controls.enabled = false;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     this.scene.add(ambientLight);
 
     const pointLight = new THREE.PointLight(0xffffff, 1);
@@ -78,12 +79,33 @@ class Game {
     this.scene.add(createDesk());
     this.scene.add(createCagedButton());
     this.scene.add(createWindow());
-    this.scene.add(createMonitor());
     this.scene.add(createPC());
     this.scene.add(createKeyboard());
     this.scene.add(createMouse());
     this.scene.add(createDoor());
     this.scene.add(createSafe());
+
+    this.modelLoader
+      .load("models/monitor/scene.gltf")
+      .then((model) => {
+        model.scale.set(0.2, 0.2, 0.2);
+        model.position.set(-0.4, 1.05, -0.3);
+        this.scene.add(model);
+      })
+      .catch((error) => {
+        console.error("Error loading monitor model:", error);
+      });
+
+    this.modelLoader
+      .load("models/office_chair.glb")
+      .then((model) => {
+        model.scale.set(1.5, 1.5, 1.5);
+        model.position.set(0, 0, 0);
+        this.scene.add(model);
+      })
+      .catch((error) => {
+        console.error("Error loading office_chair model:", error);
+      });
 
     this.animate();
   }
