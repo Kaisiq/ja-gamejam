@@ -1,6 +1,6 @@
 import "/src/style.css";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import { createDesk } from "./geometries/createDesk.js";
 import { createCagedButton } from "./geometries/createCagedButton.js";
 import { createWindow } from "./geometries/createWindow.js";
@@ -56,15 +56,15 @@ class Game {
     this.camera.position.set(0, 1.6, 1.5);
 
     // Controls
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.target.set(0, 1, 0);
-    this.controls.enableDamping = true;
-    this.controls.enabled = false;
-    // First-person-like controls
-    this.controls.enablePan = false;
-    this.controls.enableZoom = false;
-    this.controls.minPolarAngle = Math.PI / 3; // Prevent looking too far up
-    this.controls.maxPolarAngle = (2 * Math.PI) / 3; // Prevent looking too far down
+    this.controls = new PointerLockControls(
+      this.camera,
+      this.renderer.domElement,
+    );
+    this.controls.addEventListener("unlock", () => {
+      if (this.state === "PLAYING") {
+        this.pause();
+      }
+    });
 
     // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -108,6 +108,7 @@ class Game {
       .then((model) => {
         this.officeChair = model;
         this.officeChair.scale.set(0.8, 0.8, 0.8);
+        this.officeChair.rotation.y = Math.PI;
         // Position chair under the camera
         this.officeChair.position.set(
           this.camera.position.x,
@@ -127,7 +128,7 @@ class Game {
     this.state = "PLAYING";
     this.menuElement.classList.add("hidden");
     this.pauseButton.classList.remove("hidden");
-    this.controls.enabled = true;
+    this.controls.lock();
 
     const skipIntro = this.skipIntroCheckbox.checked;
     if (skipIntro) {
@@ -138,19 +139,20 @@ class Game {
   }
 
   pause() {
+    if (this.state === "PAUSED") return;
     this.state = "PAUSED";
     this.menuElement.classList.remove("hidden");
     this.startMenuElement.classList.add("hidden");
     this.pauseMenuElement.classList.remove("hidden");
     this.pauseButton.classList.add("hidden");
-    this.controls.enabled = false;
+    this.controls.unlock();
   }
 
   resume() {
     this.state = "PLAYING";
     this.menuElement.classList.add("hidden");
     this.pauseButton.classList.remove("hidden");
-    this.controls.enabled = true;
+    this.controls.lock();
   }
 
   restart() {
@@ -167,16 +169,9 @@ class Game {
     requestAnimationFrame(this.animate);
 
     if (this.state === "PLAYING") {
-      this.controls.update();
-
       if (this.officeChair) {
-        // Calculate the camera's horizontal angle
-        const cameraAngle = Math.atan2(
-          this.camera.position.x - this.controls.target.x,
-          this.camera.position.z - this.controls.target.z,
-        );
-        // Apply the angle to the chair's rotation
-        this.officeChair.rotation.y = cameraAngle;
+        // Make the chair follow the camera's rotation with a 180-degree offset
+        this.officeChair.rotation.y = this.camera.rotation.y + Math.PI;
       }
     }
     this.renderer.render(this.scene, this.camera);
