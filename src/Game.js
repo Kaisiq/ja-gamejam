@@ -4,6 +4,8 @@ import { SceneManager } from "./SceneManager.js";
 import { Lights } from "./Lights.js";
 import { Camera } from "./Camera.js";
 import { Renderer } from "./Renderer.js";
+import { InteractionManager } from "./InteractionManager.js";
+import { PuzzleManager } from "./PuzzleManager.js";
 
 export class Game {
   constructor() {
@@ -18,24 +20,33 @@ export class Game {
     this.uiManager = new UIManager(this);
     this.sceneManager = new SceneManager(this.scene);
     this.lights = new Lights(this.scene);
+    this.puzzleManager = new PuzzleManager(this.uiManager, this.scene);
+    this.interactionManager = new InteractionManager(
+      this.camera.aCamera,
+      this.scene,
+      this.uiManager,
+      this.puzzleManager,
+    );
 
     this.animate = this.animate.bind(this);
     this.init();
   }
 
-  init() {
+  async init() {
     this.lights.createLights();
 
     this.sceneManager.createScene();
-    this.sceneManager.loadModels().then((officeChair) => {
-      this.officeChair = officeChair;
-      this.officeChair.position.set(
-        this.camera.aCamera.position.x,
-        1,
-        this.camera.aCamera.position.z,
-      );
-      this.scene.add(this.officeChair);
-    });
+    const { officeChair, interactableObjects } =
+      await this.sceneManager.loadModels();
+    this.officeChair = officeChair;
+    this.officeChair.position.set(
+      this.camera.aCamera.position.x,
+      1,
+      this.camera.aCamera.position.z,
+    );
+    this.scene.add(this.officeChair);
+    this.interactionManager.interactableObjects = interactableObjects;
+    this.puzzleManager.interactableObjects = interactableObjects;
     this.animate();
   }
 
@@ -77,6 +88,7 @@ export class Game {
         // Make the chair follow the camera's rotation with a 180-degree offset
         this.officeChair.rotation.y = this.camera.aCamera.rotation.y + Math.PI;
       }
+      this.interactionManager.update();
     }
     this.renderer.aRenderer.render(this.scene, this.camera.aCamera);
   }

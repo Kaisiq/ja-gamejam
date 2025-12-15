@@ -10,6 +10,14 @@ export class UIManager {
     this.pauseButton = document.getElementById("pause-button");
     this.continueButton = document.getElementById("continue-button");
     this.restartButton = document.getElementById("restart-button");
+    this.interactionMessage = document.getElementById("interaction-message");
+    this.combinationLockUI = document.getElementById("combination-lock-ui");
+    this.combinationLockDisplay = document.getElementById(
+      "combination-lock-display",
+    );
+    this.combinationLockKeypad = document.getElementById(
+      "combination-lock-keypad",
+    );
 
     this.init();
   }
@@ -19,6 +27,11 @@ export class UIManager {
     this.pauseButton.addEventListener("click", () => this.game.pause());
     this.continueButton.addEventListener("click", () => this.game.resume());
     this.restartButton.addEventListener("click", () => this.game.restart());
+    this.combinationLockKeypad.addEventListener("click", (event) => {
+      if (event.target.tagName === "BUTTON") {
+        this.game.puzzleManager.inputDigit(event.target.textContent);
+      }
+    });
   }
 
   showPauseMenu() {
@@ -35,5 +48,26 @@ export class UIManager {
 
   isSkipIntroChecked() {
     return this.skipIntroCheckbox.checked;
+  }
+
+  showInteractionMessage(message) {
+    this.interactionMessage.textContent = message;
+    this.interactionMessage.classList.remove("hidden");
+  }
+
+  hideInteractionMessage() {
+    this.interactionMessage.classList.add("hidden");
+  }
+
+  showCombinationLock() {
+    this.combinationLockUI.classList.remove("hidden");
+  }
+
+  hideCombinationLock() {
+    this.combinationLockUI.classList.add("hidden");
+  }
+
+  updateCombinationLockDisplay(text) {
+    this.combinationLockDisplay.textContent = text;
   }
 }

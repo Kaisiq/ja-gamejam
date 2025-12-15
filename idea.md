@@ -9,3 +9,9 @@ You are the main character. You are the most evil person and are on the verge to
 - if the timer reaches 0, a cinematic of how the police is comming in and getting you is shown
 - if the player unlocks the button and clicks it, he sees a rocket through the window and it hits the ground, making the screen white; show end credits
 - the game should be easily playable on mobile phone or desktop with only a mouse
+
+## Puzzle Ideas
+1.  A key is hidden somewhere in the room. The key opens a drawer in the desk.
+2.  Inside the drawer is a piece of paper with a riddle.
+3.  The answer to the riddle is a word. The word is a password to the computer.
+4.  On the computer, there is a file with the combination for the lock.

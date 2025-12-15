@@ -7,6 +7,7 @@
     <title>The Final Button</title>
   </head>
   <body>
+    <div id="interaction-message" class="hidden"></div>
     <div id="app"></div>
     <button id="pause-button" class="hidden">Pause</button>
     <div id="menu">
@@ -22,6 +23,21 @@
         <button id="continue-button">Continue</button>
         <button id="restart-button">Restart</button>
         <!-- Settings can be added here -->
+      </div>
+    </div>
+    <div id="combination-lock-ui" class="hidden">
+      <div id="combination-lock-display"></div>
+      <div id="combination-lock-keypad">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+        <button>6</button>
+        <button>7</button>
+        <button>8</button>
+        <button>9</button>
+        <button>0</button>
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>

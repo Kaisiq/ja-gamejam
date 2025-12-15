@@ -48,3 +48,48 @@ canvas {
   font-size: 1.2rem;
   cursor: pointer;
 }
+
+#interaction-message {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+#combination-lock-ui {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  color: white;
+}
+
+#combination-lock-display {
+  background-color: #222;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  min-height: 3rem;
+}
+
+#combination-lock-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+#combination-lock-keypad button {
+  padding: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
