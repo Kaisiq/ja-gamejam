@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
+import { PointerLockControls } from "./controls/PointerLockControls.js";
 
 export class Camera {
   constructor(renderer, game) {

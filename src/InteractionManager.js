@@ -8,6 +8,7 @@ export class InteractionManager {
     this.puzzleManager = puzzleManager;
     this.sceneManager = sceneManager;
     this.raycaster = new THREE.Raycaster();
+    this.raycaster.far = 100;
     this.mouse = new THREE.Vector2();
     this.interactableObjects = [];
     this.intersectedObject = null;

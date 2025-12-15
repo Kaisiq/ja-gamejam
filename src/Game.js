@@ -52,7 +52,7 @@ export class Game {
     this.officeChair.position.set(
       this.camera.aCamera.position.x,
       1,
-      this.camera.aCamera.position.z,
+      0.5,
     );
     this.scene.add(this.officeChair);
     this.interactionManager.interactableObjects = interactableObjects;
@@ -98,8 +98,10 @@ export class Game {
 
     if (this.state === "PLAYING") {
       if (this.officeChair) {
-        // Make the chair follow the camera's rotation with a 180-degree offset
-        this.officeChair.rotation.y = this.camera.aCamera.rotation.y + Math.PI;
+        const cameraDirection = new THREE.Vector3();
+        this.camera.aCamera.getWorldDirection(cameraDirection);
+        const angle = Math.atan2(cameraDirection.x, cameraDirection.z);
+        this.officeChair.rotation.y = angle;
       }
       this.interactionManager.update();
       this.sceneManager.update(deltaTime);

@@ -67,7 +67,10 @@ export class SceneManager {
       .catch((error) => {
         console.error("Error loading office model:", error);
       });
-    if (office) this.scene.add(office);
+    if (office) {
+      office.rotation.y = -Math.PI / 2;
+      this.scene.add(office);
+    }
 
     const button = await this.modelLoader
       .load("models/button.glb")
@@ -102,6 +105,7 @@ export class SceneManager {
       });
     if (desk) {
       desk.position.set(0, 0, -1);
+      desk.scale.set(1.5, 1.5, 1.5);
       this.scene.add(desk);
 
       const topDrawer = desk.getObjectByName("top_drawer");
