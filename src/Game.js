@@ -11,12 +11,13 @@ export class Game {
   constructor() {
     this.state = "MENU";
     this.officeChair = null;
+    this.debugMode = false;
 
     this.renderer = new Renderer();
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x1a1a1a);
-
-    this.camera = new Camera(this.renderer.aRenderer, this);
+		
+		this.camera = new Camera(this.renderer.aRenderer, this);
     this.uiManager = new UIManager(this);
     this.sceneManager = new SceneManager(this.scene);
     this.lights = new Lights(this.scene);
@@ -26,10 +27,19 @@ export class Game {
       this.scene,
       this.uiManager,
       this.puzzleManager,
+      this.sceneManager,
     );
 
+    this.clock = new THREE.Clock();
     this.animate = this.animate.bind(this);
     this.init();
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "d") {
+        this.debugMode = !this.debugMode;
+        this.sceneManager.toggleDebugHelpers(this.debugMode);
+      }
+    });
   }
 
   async init() {
@@ -68,12 +78,14 @@ export class Game {
     this.state = "PAUSED";
     this.uiManager.showPauseMenu();
     this.camera.aControls.unlock();
+    this.interactionManager.pause();
   }
 
   resume() {
     this.state = "PLAYING";
     this.uiManager.hideMenu();
     this.camera.aControls.lock();
+    this.interactionManager.resume();
   }
 
   restart() {
@@ -82,6 +94,7 @@ export class Game {
 
   animate() {
     requestAnimationFrame(this.animate);
+    const deltaTime = this.clock.getDelta();
 
     if (this.state === "PLAYING") {
       if (this.officeChair) {
@@ -89,6 +102,7 @@ export class Game {
         this.officeChair.rotation.y = this.camera.aCamera.rotation.y + Math.PI;
       }
       this.interactionManager.update();
+      this.sceneManager.update(deltaTime);
     }
     this.renderer.aRenderer.render(this.scene, this.camera.aCamera);
   }

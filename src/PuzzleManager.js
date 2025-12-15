@@ -5,6 +5,28 @@ export class PuzzleManager {
     this.interactableObjects = interactableObjects;
     this.combinationCode = this.generateCode();
     this.playerInput = "";
+    this.hasKey = false;
+    this.riddle = "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?";
+    this.riddleAnswer = "map";
+  }
+
+  checkPassword(password) {
+    if (password.toLowerCase() === this.riddleAnswer) {
+      this.uiManager.showInteractionMessage(
+        `Correct! The combination is ${this.combinationCode}`,
+      );
+      this.uiManager.hidePasswordUI();
+    } else {
+      this.uiManager.showInteractionMessage("Wrong password.");
+      setTimeout(() => {
+        this.uiManager.hideInteractionMessage();
+      }, 2000);
+    }
+  }
+
+  pickUpKey() {
+    this.hasKey = true;
+    console.log("Key picked up");
   }
 
   generateCode() {

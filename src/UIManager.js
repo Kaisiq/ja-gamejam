@@ -18,6 +18,9 @@ export class UIManager {
     this.combinationLockKeypad = document.getElementById(
       "combination-lock-keypad",
     );
+    this.passwordUI = document.getElementById("password-ui");
+    this.passwordInput = document.getElementById("password-input");
+    this.passwordSubmit = document.getElementById("password-submit");
 
     this.init();
   }
@@ -32,6 +35,17 @@ export class UIManager {
         this.game.puzzleManager.inputDigit(event.target.textContent);
       }
     });
+    this.passwordSubmit.addEventListener("click", () => {
+      this.game.puzzleManager.checkPassword(this.passwordInput.value);
+    });
+  }
+
+  showPasswordUI() {
+    this.passwordUI.classList.remove("hidden");
+  }
+
+  hidePasswordUI() {
+    this.passwordUI.classList.add("hidden");
   }
 
   showPauseMenu() {
